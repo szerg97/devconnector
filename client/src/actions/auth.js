@@ -19,6 +19,8 @@ export const register = ({name, email, password}) => async dispatch => {
             type: REGISTER_SUCCESS,
             payload: res.data
         });
+
+        dispatch(setAlert('Register was successful', 'success'));
     } catch (err) {
         const errors = err.response.data.errors;
 
