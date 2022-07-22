@@ -1,10 +1,11 @@
 import React, {Fragment, useState} from 'react';
+import {Link, Navigate} from 'react-router-dom';
 import { setAlert} from '../../actions/alert';
 import {register} from '../../actions/auth';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
-const Register = ({setAlert, register}) => {
+const Register = ({setAlert, register, isAuthenticated}) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -25,6 +26,10 @@ const onSubmit = e => {
         register({name, email, password});
     }
 };
+
+if(isAuthenticated){
+  return <Navigate to="/dashboard" />
+}
 
 return (
   <Fragment>
@@ -62,7 +67,7 @@ return (
   <input type="submit" className="btn btn-primary" value="Register" />
 </form>
 <p className="my-1">
-  Already have an account? <a href="login.html">Sign In</a>
+  Already have an account? <Link to="/register">Sign In</Link>
 </p>
 </Fragment>
 );
@@ -70,7 +75,12 @@ return (
 
 Register.propTypes = {
   setAlert: PropTypes.func.isRequired,
-  register: PropTypes.func.isRequired
+  register: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool
 }
 
-export default connect(null, {setAlert, register})(Register);
+const mapStateToProps = state => ({
+  isAuthenticated: state.auth.isAuthenticated
+});
+
+export default connect(mapStateToProps, {setAlert, register})(Register);
