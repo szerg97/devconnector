@@ -15,11 +15,11 @@ const App = () =>
     <Router>
       <Fragment>
         <Navbar/>
-        <Alert/>
         <Routes>
           <Route exact path='/' element={ <Landing /> } />
         </Routes>
         <div className='container'>
+          <Alert/>
           <Routes>
             <Route exact path='/register' element={<Register />} />
             <Route exact path='/login' element={<Login />} />
