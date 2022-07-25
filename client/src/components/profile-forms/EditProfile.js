@@ -1,28 +1,48 @@
-import React, {Fragment, useState} from 'react'
-import {Link, useNavigate} from 'react-router-dom';
+import React, {Fragment, useState, useEffect} from 'react'
+import {useNavigate} from 'react-router-dom';
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
-import { createProfile } from '../../actions/profile'
+import { createProfile, getCurrentProfile } from '../../actions/profile'
 
-const CreateProfile = ({createProfile}) => {
+const initialState = {
+    company: '',
+    website: '',
+    location: '',
+    status: '',
+    skills: '',
+    bio: '',
+    twitter: '',
+    facebook: '',
+    linkedin: '',
+    youtube: '',
+    instagram: ''
+  };
 
-    const [formData, setFormData] = useState({
-       company: '',
-       website: '',
-       location: '',
-       status: '',
-       skills: '',
-       bio: '',
-       twitter: '',
-       facebook: '',
-       linkedin: '',
-       youtube: '',
-       instagram: '' 
-    });
+const EditProfile = ({profile: {profile, loading}, createProfile, getCurrentProfile}) => {
+
+    const [formData, setFormData] = useState(initialState);
 
     const[displaySocialInputs, toggleSocialInputs] = useState(false);
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        getCurrentProfile();
+
+        setFormData({
+            company: loading || !profile.company ? '' : profile.company,
+            website: loading || !profile.website ? '' : profile.website,
+            location: loading || !profile.location ? '' : profile.location,
+            status: loading || !profile.status ? '' : profile.status,
+            skills: loading || !profile.skills ? '' : profile.skills,
+            bio: loading || !profile.bio ? '' : profile.bio,
+            twitter: loading || !profile.social || !profile.social.twitter ? '' : profile.social.twitter,
+            facebook: loading || !profile.social || !profile.social.facebook ? '' : profile.social.facebook,
+            linkedin: loading || !profile.social || !profile.social.linkedin ? '': profile.social.linkedin,
+            youtube: loading || !profile.social || !profile.social.youtube ? '' : profile.social.youtube,
+            instagram: loading || !profile.social || !profile.social.instagram ? '' : profile.social.instagram
+        });
+    }, [loading, profile, getCurrentProfile]);
 
     const {
         company,
@@ -52,13 +72,13 @@ const CreateProfile = ({createProfile}) => {
     }
 
     const first = async () => {
-        return createProfile(formData);
+        return createProfile(formData, true);
     }
 
   return (
     <Fragment>
         <h1 className="large text-primary">
-        Create Your Profile
+        Edit Your Profile
         </h1>
         <p className="lead">
             <i className="fas fa-user"></i> Let's get some information to make your
@@ -155,8 +175,14 @@ const CreateProfile = ({createProfile}) => {
   )
 }
 
-CreateProfile.propTypes = {
-    createProfile: PropTypes.func.isRequired
+EditProfile.propTypes = {
+    createProfile: PropTypes.func.isRequired,
+    getCurrentProfile: PropTypes.func.isRequired,
+    profile: PropTypes.object.isRequired
 }
 
-export default connect(null, {createProfile})(CreateProfile)
+const mapStateToProps = state => ({
+    profile: state.profile
+});
+
+export default connect(mapStateToProps, {createProfile, getCurrentProfile})(EditProfile)
